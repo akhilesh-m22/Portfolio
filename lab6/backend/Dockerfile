@@ -4,5 +4,5 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["bash"]
+CMD ["sleep", "infinity"]
 
