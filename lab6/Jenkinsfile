@@ -14,8 +14,9 @@ pipeline {
                 sh '''
                 docker network create app-network || true
                 docker rm -f backend1 backend2 || true
-                docker run -d --security-opt seccomp=unconfined --name backend1 --network app-network backend-app
-		docker run -d --security-opt seccomp=unconfined --name backend2 --network app-network backend-app
+                docker run -d --security-opt seccomp=unconfined --name backend1 --network app-network -p 8081:8080 backend-app
+		docker run -d --security-opt seccomp=unconfined --name backend2 --network app-network -p 8082:8080 backend-app
+
 
                 '''
             }
@@ -25,12 +26,8 @@ pipeline {
                 sh '''
                 docker rm -f nginx-lb || true
                 
-                docker run -d \
-                  --security-opt seccomp=unconfined \
-                  --name nginx-lb \
-                  --network app-network \
-                  -p 80:80 \
-                  nginx
+                docker run -d --security-opt seccomp=unconfined --name nginx-lb --network app-network -p 8081:80 nginx-lb
+
                 
                 docker cp lab6/nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf
                 docker exec nginx-lb nginx -s reload
